@@ -27,6 +27,16 @@ extra["springCloudVersion"] = "2023.0.1"
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+
+    implementation("io.github.openfeign:feign-okhttp")
+    implementation("io.github.openfeign:feign-micrometer")
+
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+    implementation("io.opentelemetry:opentelemetry-exporter-zipkin")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
+
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

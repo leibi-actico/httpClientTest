@@ -1,6 +1,8 @@
 package com.actico.poc.httpclient.httpclienttest.config;
 
 import com.actico.poc.httpclient.httpclienttest.service.RestClientService;
+import feign.okhttp.OkHttpClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
@@ -10,7 +12,8 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 @Configuration
 public class ClientConfiguration {
 
-    public static final String URL = "https://official-joke-api.appspot.com/random_joke";
+    @Value("${jokes.url}")
+    private String URL;
 
     @Bean
     public RestClientService restClientService() {
@@ -21,5 +24,9 @@ public class ClientConfiguration {
         return factory.createClient(RestClientService.class);
     }
 
+    @Bean
+    public OkHttpClient client() {
+        return new OkHttpClient();
+    }
 
 }
