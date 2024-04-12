@@ -6,11 +6,13 @@ import io.micrometer.context.ContextExecutorService;
 import io.micrometer.context.ContextSnapshotFactory;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -18,11 +20,13 @@ import java.util.concurrent.Future;
 @Service
 @RequiredArgsConstructor
 @Observed
+@Log4j2
 public class JokeService {
 
     private final RestClientService restClientService;
     private final OpenfeignService openfeignService;
     private final OpenfeignServiceOkHttp openfeignServiceOkHttp;
+    private final RestClientService restClientServiceWithOkHTTP;
 
 
     private final ExecutorService executor =
@@ -35,8 +39,11 @@ public class JokeService {
         getCalls().forEach(extendedJokeCall -> {
             try {
                 jokes.add(ExtendedJoke.builder().serviceType(extendedJokeCall.serviceType).joke(extendedJokeCall.jokeCall.get()).build());
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (InterruptedException e) {
+                log.warn("Interrupted!", e);
+                Thread.currentThread().interrupt();
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
             }
         });
         return jokes;
@@ -46,8 +53,9 @@ public class JokeService {
         return List.of(new ExtendedJokeCall("spring http interface",
                         executor.submit(restClientService::getJoke)),
                 new ExtendedJokeCall("Spring Cloud OpenFeign", executor.submit(openfeignService::getJoke)),
-                new ExtendedJokeCall("Spring Cloud OpenFeign - okHTTP", executor.submit(openfeignServiceOkHttp::getJoke)
-                ));
+                new ExtendedJokeCall("Spring Cloud OpenFeign - okHTTP", executor.submit(openfeignServiceOkHttp::getJoke)),
+                new ExtendedJokeCall("spring http interface - okHTTP", executor.submit(openfeignServiceOkHttp::getJoke))
+        );
     }
 
     record ExtendedJokeCall(String serviceType, Future<Joke> jokeCall) {

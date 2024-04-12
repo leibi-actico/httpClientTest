@@ -1,6 +1,7 @@
 package com.actico.poc.httpclient.httpclienttest.config;
 
 import com.actico.poc.httpclient.httpclienttest.service.RestClientService;
+import feign.Feign;
 import feign.okhttp.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,12 @@ public class ClientConfiguration {
 
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
         return factory.createClient(RestClientService.class);
+    }
+
+
+    @Bean
+    public RestClientService restClientServiceWithOkHTTP() {
+        return Feign.builder().client(new OkHttpClient()).target(RestClientService.class, URL);
     }
 
     @Bean

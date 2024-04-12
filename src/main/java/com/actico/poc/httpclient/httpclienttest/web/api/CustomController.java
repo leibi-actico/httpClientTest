@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController("/")
+@RestController
 @RequiredArgsConstructor
 @Observed
 public class CustomController {
