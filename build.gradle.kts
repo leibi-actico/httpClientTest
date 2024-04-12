@@ -30,6 +30,7 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 
     implementation("io.github.openfeign:feign-okhttp")
+    implementation("io.github.openfeign:feign-jackson")
     implementation("io.github.openfeign:feign-micrometer")
 
     implementation("io.micrometer:micrometer-tracing-bridge-otel")

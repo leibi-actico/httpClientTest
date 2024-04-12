@@ -1,5 +1,6 @@
 package com.actico.poc.httpclient.httpclienttest.config;
 
+import com.actico.poc.httpclient.httpclienttest.service.OkHttpService;
 import com.actico.poc.httpclient.httpclienttest.service.RestClientService;
 import feign.Feign;
 import feign.okhttp.OkHttpClient;
@@ -27,8 +28,11 @@ public class ClientConfiguration {
 
 
     @Bean
-    public RestClientService restClientServiceWithOkHTTP() {
-        return Feign.builder().client(new OkHttpClient()).target(RestClientService.class, URL);
+    public OkHttpService okHttpService() {
+        return Feign.builder()
+                .client(new OkHttpClient())
+                .decoder(new feign.jackson.JacksonDecoder())
+                .target(OkHttpService.class, URL);
     }
 
     @Bean

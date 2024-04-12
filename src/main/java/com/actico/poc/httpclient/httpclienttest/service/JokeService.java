@@ -26,7 +26,7 @@ public class JokeService {
     private final RestClientService restClientService;
     private final OpenfeignService openfeignService;
     private final OpenfeignServiceOkHttp openfeignServiceOkHttp;
-    private final RestClientService restClientServiceWithOkHTTP;
+    private final OkHttpService okHttpService;
 
 
     private final ExecutorService executor =
@@ -54,7 +54,7 @@ public class JokeService {
                         executor.submit(restClientService::getJoke)),
                 new ExtendedJokeCall("Spring Cloud OpenFeign", executor.submit(openfeignService::getJoke)),
                 new ExtendedJokeCall("Spring Cloud OpenFeign - okHTTP", executor.submit(openfeignServiceOkHttp::getJoke)),
-                new ExtendedJokeCall("spring http interface - okHTTP", executor.submit(openfeignServiceOkHttp::getJoke))
+                new ExtendedJokeCall("spring http interface - okHTTP", executor.submit(okHttpService::getJoke))
         );
     }
 
