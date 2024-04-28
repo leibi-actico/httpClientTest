@@ -5,11 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients
-public class HttpClientTestApplication {
+@EnableFeignClients(basePackages = "com.actico.poc")
+public class HttpClientTestApplication
+{
 
-    public static void main(String[] args) {
-        SpringApplication.run(HttpClientTestApplication.class, args);
-    }
+   public static void main(String[] args)
+   {
+      SpringApplication.run(HttpClientTestApplication.class, args);
+   }
 
 }

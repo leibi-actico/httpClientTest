@@ -16,6 +16,7 @@ paths:
       tags:
         - Jokes
       summary: Get a random joke
+      operationId: getRandomJoke
       responses:
         '200':
           description: OK

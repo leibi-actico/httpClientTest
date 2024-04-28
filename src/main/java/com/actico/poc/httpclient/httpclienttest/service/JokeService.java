@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.actico.poc.httpclient.httpclienttest.model.ExtendedJoke;
 import com.actico.poc.httpclient.httpclienttest.model.Joke;
+import com.actico.poc.httpclient.jokes.templated.client.api.JokesApi;
 
 import io.micrometer.context.ContextExecutorService;
 import io.micrometer.context.ContextSnapshotFactory;
@@ -31,7 +32,7 @@ public class JokeService
    private final OpenfeignServiceOkHttp openfeignServiceOkHttp;
    private final OkHttpService okHttpService;
    private final OpenApiJokesService openApiJokesService;
-
+   private final JokesApi templatedJokesApi;
 
    private final ExecutorService executor =
       ContextExecutorService.wrap(
@@ -66,7 +67,11 @@ public class JokeService
          new ExtendedJokeCall("Spring Cloud OpenFeign", executor.submit(openfeignService::getJoke)),
          new ExtendedJokeCall("Spring Cloud OpenFeign - okHTTP", executor.submit(openfeignServiceOkHttp::getJoke)),
          new ExtendedJokeCall("spring http interface - okHTTP", executor.submit(okHttpService::getJoke)),
-         new ExtendedJokeCall("openApi client ", executor.submit(openApiJokesService::getJoke))
+         new ExtendedJokeCall("openApi client ", executor.submit(openApiJokesService::getJoke)),
+         new ExtendedJokeCall("templated openApi client ", executor.submit(() -> {
+            var apiJoke = templatedJokesApi.getRandomJoke();
+            return new Joke(apiJoke.getType(), apiJoke.getSetup(), apiJoke.getPunchline(), apiJoke.getId());
+         }))
       );
    }
 

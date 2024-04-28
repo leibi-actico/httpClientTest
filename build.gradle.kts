@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.2.4"
+    id("org.springframework.boot") version "3.2.5"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.graalvm.buildtools.native") version "0.9.28"
     id("org.openapi.generator") version "7.4.0"
@@ -73,15 +73,17 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.create<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("buildJokesClient") {
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("buildJokesClient") {
+    description = "Generates the openApi client code."
+    group = "build"
     generatorName.set("java")
     inputSpec.set("${projectDir}/api/JokesApi.yaml")
     outputDir.set("${projectDir}/build/generated/")
     apiPackage = "com.actico.poc.httpclient.jokes.client.api"
     modelPackage = "com.actico.poc.httpclient.jokes.client.model"
-    generateApiTests.set(false)
-    generateApiDocumentation.set(false)
-    generateModelTests.set(false)
+    generateApiTests.set(true)
+    generateApiDocumentation.set(true)
+    generateModelTests.set(true)
     library.set("feign") //feign, native
     configOptions.set(
         mapOf(
@@ -90,7 +92,7 @@ tasks.create<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("build
             "interfaceOnly" to "true",
             "hideGenerationTimestamp" to "true",
             "skipDefaultInterface" to "true",
-            "useSwaggerUI" to "false",
+            "useSwaggerUI" to "true",
             "reactive" to "false",
             "useSpringBoot3" to "true",
             "oas3" to "true",
@@ -100,4 +102,34 @@ tasks.create<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("build
     )
 }
 
-tasks.withType<JavaCompile> { dependsOn("buildJokesClient") }
+tasks.register<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("buildJokesClientWithTemplate") {
+    description = "Generates the openApi client code."
+    group = "build"
+    generatorName.set("java")
+    inputSpec.set("${projectDir}/api/JokesApi.yaml")
+    outputDir.set("${projectDir}/build/generated/")
+    templateDir.set("${projectDir}/api/templates")
+    apiPackage = "com.actico.poc.httpclient.jokes.templated.client.api"
+    modelPackage = "com.actico.poc.httpclient.jokes.templated.client.model"
+    generateApiTests.set(true)
+    generateApiDocumentation.set(true)
+    generateModelTests.set(true)
+    library.set("feign") //feign, native
+    configOptions.set(
+        mapOf(
+            "swaggerAnnotations" to "false",
+            "openApiNullable" to "true",
+            "interfaceOnly" to "true",
+            "hideGenerationTimestamp" to "true",
+            "skipDefaultInterface" to "true",
+            "useSwaggerUI" to "true",
+            "reactive" to "false",
+            "useSpringBoot3" to "true",
+            "oas3" to "true",
+            "generateSupportingFiles" to "false",
+            "useJakartaEe" to "true",
+        )
+    )
+}
+
+tasks.withType<JavaCompile> { dependsOn("buildJokesClient", "buildJokesClientWithTemplate") }
