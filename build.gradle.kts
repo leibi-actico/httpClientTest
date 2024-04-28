@@ -3,6 +3,8 @@ plugins {
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.graalvm.buildtools.native") version "0.9.28"
+    id("org.openapi.generator") version "7.4.0"
+    id("idea")
 }
 
 group = "com.actico.poc.httpClient"
@@ -22,6 +24,20 @@ repositories {
     mavenCentral()
 }
 
+idea {
+    module {
+        sourceDirs.add(file("build/generated/src/main/java"))
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir("build/generated/src/main/java")
+        }
+    }
+}
+
 extra["springCloudVersion"] = "2023.0.1"
 
 dependencies {
@@ -36,6 +52,8 @@ dependencies {
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
     implementation("io.opentelemetry:opentelemetry-exporter-zipkin")
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+
+    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
 
 
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
@@ -54,3 +72,32 @@ dependencyManagement {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+tasks.create<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("buildJokesClient") {
+    generatorName.set("java")
+    inputSpec.set("${projectDir}/api/JokesApi.yaml")
+    outputDir.set("${projectDir}/build/generated/")
+    apiPackage = "com.actico.poc.httpclient.jokes.client.api"
+    modelPackage = "com.actico.poc.httpclient.jokes.client.model"
+    generateApiTests.set(false)
+    generateApiDocumentation.set(false)
+    generateModelTests.set(false)
+    library.set("feign") //feign, native
+    configOptions.set(
+        mapOf(
+            "swaggerAnnotations" to "false",
+            "openApiNullable" to "true",
+            "interfaceOnly" to "true",
+            "hideGenerationTimestamp" to "true",
+            "skipDefaultInterface" to "true",
+            "useSwaggerUI" to "false",
+            "reactive" to "false",
+            "useSpringBoot3" to "true",
+            "oas3" to "true",
+            "generateSupportingFiles" to "false",
+            "useJakartaEe" to "true",
+        )
+    )
+}
+
+tasks.withType<JavaCompile> { dependsOn("buildJokesClient") }

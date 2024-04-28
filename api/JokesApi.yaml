@@ -1,0 +1,42 @@
+openapi: 3.0.3
+info:
+  title: Jokes API
+  description: Jokes API
+  version: 1.0.0
+servers:
+  - url: 'https://official-joke-api.appspot.com/'
+
+tags:
+  - name: Jokes
+    description: Jokes
+
+paths:
+  /random_joke:
+    get:
+      tags:
+        - Jokes
+      summary: Get a random joke
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Joke'
+
+components:
+  schemas:
+    Joke:
+      type: object
+      properties:
+        type:
+          type: string
+        setup:
+          type: string
+        punchline:
+          type: string
+        id:
+          type: integer
+
+
+  
