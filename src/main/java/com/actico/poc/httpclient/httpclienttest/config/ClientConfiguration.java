@@ -9,6 +9,8 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 import com.actico.poc.httpclient.httpclienttest.service.OkHttpService;
 import com.actico.poc.httpclient.httpclienttest.service.RestClientService;
+import com.actico.poc.httpclient.jokes.client.ApiClient;
+import com.actico.poc.httpclient.jokes.client.api.JokesApi;
 
 import feign.Feign;
 import feign.okhttp.OkHttpClient;
@@ -46,20 +48,11 @@ public class ClientConfiguration
       return new OkHttpClient();
    }
 
-   /*
+
    @Bean
-   public JokesApi templatedJokesApi()
+   public JokesApi jokesApi()
    {
       return new ApiClient().buildClient(JokesApi.class);
-   }
-
-    */
-
-   @Bean
-   public com.actico.poc.httpclient.jokes.client.api.JokesApi jokesApi()
-   {
-      return new com.actico.poc.httpclient.jokes.client.ApiClient()
-         .buildClient(com.actico.poc.httpclient.jokes.client.api.JokesApi.class);
    }
 
 }
